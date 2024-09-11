@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateAuthDto {
+export class GuestbookDto {
     @ApiProperty({
         description: "작성자의 이름입니다.",
         example: "10521 이주안"
