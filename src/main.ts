@@ -1,8 +1,38 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { linkToDatabase } from './utils/db.util';
+import { setupSwagger } from './utils/swagger.util';
+import helmet from 'helmet';
+import { config } from 'dotenv';
+
+config(); const env = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  app.setGlobalPrefix(process.env.GLOBAL_PREFIX);
+  app.enableCors({
+    origin: ['*'],
+    credentials: true,
+    exposedHeaders: ["Authorization"]
+  });
+
+  app.use(helmet({
+    contentSecurityPolicy: false
+  }));
+  
+  await linkToDatabase();
+  if (env.MODE == "DEV") {
+    try {
+      setupSwagger(app);
+      console.log("Swagger is enabled");
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  await app.listen(process.env.PORT || 3000).then(() => {
+    console.log(`App is running on Port ${env.PORT || 3000}`)
+  }).catch((e) => {
+    console.error(e)
+  });
 }
 bootstrap();
