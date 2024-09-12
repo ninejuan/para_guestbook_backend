@@ -4,15 +4,25 @@ import Guestbook from './interface/guestbook.interface';
 import { GuestbookDto } from './dto/guestbook.dto';
 import { config } from 'dotenv';
 
-config(); const env = process.env;
+config(); // 환경 변수 설정
 
 @Injectable()
 export class AppService {
-  async getGuestbookContents() {
-    return 'Hello World!';
+
+  async getGuestbookContents(): Promise<Guestbook[]> {
+    return guestbookSchema.find().sort({ createdAt: -1 });
   }
 
-  async writeGuestbookContent() {
+  async writeGuestbookContent(guestbookDto: GuestbookDto): Promise<string> {
+    const { name, content } = guestbookDto;
+    const newGuestbook = new guestbookSchema({ name, content, createdAt: Date.now() });
+    
+    await newGuestbook.save(); 
+    return newGuestbook.name; 
+  }
 
+  async resetGuestbook() {
+    await guestbookSchema.deleteMany({});
+    return true;
   }
 }
