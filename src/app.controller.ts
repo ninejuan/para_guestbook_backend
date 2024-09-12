@@ -1,11 +1,11 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 import guestbookSchema from './models/guestbook.schema';
 import Guestbook from './interface/guestbook.interface';
 import { GuestbookDto } from './dto/guestbook.dto';
 import { config } from 'dotenv';
 
-config(); const env = process.env;
+config();
 
 @Controller()
 export class AppController {
@@ -17,7 +17,12 @@ export class AppController {
   }
 
   @Post('write')
-  async writeGuestbookContent() {
+  async writeGuestbookContent(@Body() guestbookDto: GuestbookDto) {
+    return this.appService.writeGuestbookContent(guestbookDto);
+  }
 
+  @Delete('reset')
+  rgb() {
+    return this.appService.resetGuestbook();
   }
 }
